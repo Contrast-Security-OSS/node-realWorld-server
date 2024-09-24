@@ -16,7 +16,7 @@ For more information on how to this works with other frontends/backends, head ov
 
 1. install npm
 1. make sure mongo is running
-1. define needs env vars
+1. define needed env vars
    - `DATABASE_URI` - the uri to the mongo database: mongodb://127.0.0.1:27017/somedbname (assuming mongo is running on localhost:27017)
    - `ACCESS_TOKEN_SECRET` - the secret used for the JWT
 1. execute `node api/index.js`
