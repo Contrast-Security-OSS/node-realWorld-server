@@ -30,7 +30,7 @@ Run PM collection tests, but
   - 1, 10, ???
 - predefined test data
   - safe/unsafe
-  - varied sizes 10, 100, 1000, 10000
+  - varied sizes
 - random test data?
   - safe/unsafe
   - varied sizes 10, 100, 1000, 10000
