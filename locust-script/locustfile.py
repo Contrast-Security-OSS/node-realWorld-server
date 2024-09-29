@@ -1,5 +1,5 @@
 from locust import HttpUser, task, between
-import json
+import data
 
 class APIUser(HttpUser):
     host = "http://127.0.0.1:4000"
@@ -7,9 +7,9 @@ class APIUser(HttpUser):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.list_of_tasks = [
-            {"n": 5, "fn_or_list": self.read_articles},
+            {"n": 5, "action": self.read_articles},
             self.login,
-            self.simple_post_and_read,
+            lambda : self.post_articles(10),
         ]
 
     @task
@@ -22,16 +22,28 @@ class APIUser(HttpUser):
                 task()
             elif type(task) == dict:
                 n = task["n"]
-                fn_or_list = task["fn_or_list"]
+                action = task["action"]
                 for _ in range(n):
-                    if type(fn_or_list) == list:
-                        self.execute(fn_or_list)
-                    elif callable(fn_or_list):
-                        fn_or_list()
+                    if type(action) == list:
+                        self.execute(action)
+                    elif callable(action):
+                        action()
                     else:
                         raise Exception("repeaters must be function or list")
             else:
                 raise Exception("tasks must be function or dict")
+
+    def post_articles(self, n):
+        articles = data.get_articles(self.username, n)
+        for article in articles:
+            response = self.client.post(
+                url = "/api/articles",
+                headers = self.make_post_headers(auth = True),
+                json = {"article": article}
+            )
+            self.check(response)
+
+
 
     #@task
     def simple_post_and_read(self):
@@ -103,6 +115,7 @@ class APIUser(HttpUser):
         if response.status_code == 200:
             decoded = response.json()
             self.token = decoded['user']['token']
+            self.username = decoded['user']['username']
 
         return response
 
@@ -122,9 +135,13 @@ class APIUser(HttpUser):
             decoded = response.json()
             self.token = decoded['user']['token']
 
+    def check(self, response):
+        if response.status_code != 200:
+            print(f"Error: {response.status_code}")
+
     def on_start(self):
-        print("on_start")
-        # APIUser.list_of_tasks.append({"n": 5, "fn_or_list": self.read_articles})
+        pass
+        # APIUser.list_of_tasks.append({"n": 5, "action": self.read_articles})
         # APIUser.list_of_tasks.append(self.simple_post_and_read)
 
     # def on_start(self):

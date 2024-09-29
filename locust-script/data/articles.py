@@ -1,4 +1,4 @@
-from data import _seq
+from data import _useq
 
 # https://www.lipsum.com/
 
@@ -60,28 +60,21 @@ articles = [
     {"text": lorem05, "paragraphs": 5, "words": 519},
 ]
 
-# articles = [
-#     {
-#         "title":"How to train your cat by ",
-#         "description":"Ever wonder how?",
-#         "body":"Let your cat train you instead; it is much easier.",
-#         "tagList":["training", "cats"]
-#     }
-# ]
-
 def get_articles(n, user, paragraphs = 1):
-    if n < 1 or n > len(articles):
-        raise Exception(f"{n} must be in the range 1 to {len(articles)}")
+    if paragraphs < 1 or paragraphs > len(articles):
+        raise Exception(f"paragraphs must be in the range 1 to {len(articles)}, got {paragraphs}")
 
     unique_articles = []
 
     for i in range(n):
-        # title must be unique, so we add "by {user}" to it.
+        seq = f"{i:03d}"
+        ix = i % len(articles)
+        # title must be unique, so we add "by {user} ({seq})" to it.
         article = {
-            "title": f"{titles[i]} by {user}",
-            "description": descriptions[i],
+            "title": f"{titles[ix]} by {user} ({seq})",
+            "description": descriptions[ix],
             "body": articles[paragraphs - 1]["text"],
-            "tagList": [tags[i], tags[(i + 1) % len(articles)]]
+            "tagList": [tags[ix], tags[(ix + 1) % len(articles)]]
         }
         unique_articles.append(article)
 
