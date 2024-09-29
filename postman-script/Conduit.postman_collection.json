@@ -17,18 +17,18 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "if (!(environment.isIntegrationTest)) {",
-                  "var responseJSON = JSON.parse(responseBody);",
+                  "if (!(pm.environment.isIntegrationTest)) {",
+                  "    var responseJSON = JSON.parse(responseBody);",
                   "",
-                  "pm.test('Response contains \"user\" property', () => pm.expect(responseJSON).own.property('user'));",
+                  "    pm.test('Response contains \"user\" property', () => pm.expect(responseJSON).own.property('user'));",
                   "",
-                  "var user = responseJSON.user || {};",
+                  "    var user = responseJSON.user || {};",
                   "",
-                  "pm.test('User has \"email\" property', () => pm.expect(user).own.property('email'));",
-                  "pm.test('User has \"username\" property', () => pm.expect(user).own.property('username'));",
-                  "pm.test('User has \"bio\" property', () => pm.expect(user).own.property('bio'));",
-                  "pm.test('User has \"image\" property', () => pm.expect(user).own.property('image'));",
-                  "pm.test('User has \"token\" property', () => pm.expect(user).own.property('token'));",
+                  "    pm.test('User has \"email\" property', () => pm.expect(user).own.property('email'));",
+                  "    pm.test('User has \"username\" property', () => pm.expect(user).own.property('username'));",
+                  "    pm.test('User has \"bio\" property', () => pm.expect(user).own.property('bio'));",
+                  "    pm.test('User has \"image\" property', () => pm.expect(user).own.property('image'));",
+                  "    pm.test('User has \"token\" property', () => pm.expect(user).own.property('token'));",
                   "}",
                   ""
                 ]
@@ -279,7 +279,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var is200Response = responseCode.code === 200;",
+                  "var is200Response = pm.response.code === 200;",
                   "",
                   "pm.test('Response code is 200 OK', () => pm.expect(is200Response).true);",
                   "",
@@ -347,7 +347,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var is200Response = responseCode.code === 200;",
+                  "var is200Response = pm.response.code === 200;",
                   "",
                   "pm.test('Response code is 200 OK', () => pm.expect(is200Response).true);",
                   "",
@@ -421,7 +421,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var is200Response = responseCode.code === 200;",
+                  "var is200Response = pm.response.code === 200;",
                   "",
                   "pm.test('Response code is 200 OK', () => pm.expect(is200Response).true);",
                   "",
@@ -495,7 +495,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var is200Response = responseCode.code === 200;",
+                  "var is200Response = pm.response.code === 200;",
                   "",
                   "pm.test('Response code is 200 OK', () => pm.expect(is200Response).true);",
                   "",
@@ -638,7 +638,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var is200Response = responseCode.code === 200;",
+                  "var is200Response = pm.response.code === 200;",
                   "",
                   "pm.test('Response code is 200 OK', () => pm.expect(is200Response).true);",
                   "",
@@ -710,7 +710,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var is200Response = responseCode.code === 200;",
+                  "var is200Response = pm.response.code === 200;",
                   "",
                   "pm.test('Response code is 200 OK', () => pm.expect(is200Response).true);",
                   "",
@@ -782,7 +782,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var is200Response = responseCode.code === 200;",
+                  "var is200Response = pm.response.code === 200;",
                   "",
                   "pm.test('Response code is 200 OK', () => pm.expect(is200Response).true);",
                   "",
@@ -854,7 +854,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var is200Response = responseCode.code === 200;",
+                  "var is200Response = pm.response.code === 200;",
                   "",
                   "pm.test('Response code is 200 OK', () => pm.expect(is200Response).true);",
                   "",
@@ -932,7 +932,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var is200Response = responseCode.code === 200;",
+                  "var is200Response = pm.response.code === 200;",
                   "",
                   "pm.test('Response code is 200 OK', () => pm.expect(is200Response).true);",
                   "",
@@ -1071,7 +1071,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var is200Response = responseCode.code === 200;",
+                  "var is200Response = pm.response.code === 200;",
                   "",
                   "pm.test('Response code is 200 OK', () => pm.expect(is200Response).true);",
                   "",
@@ -1148,7 +1148,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "if (!(environment.isIntegrationTest)) {",
+                  "if (!(pm.environment.isIntegrationTest)) {",
                   "  var responseJSON = JSON.parse(responseBody);",
                   "",
                   "  pm.test('Response contains \"article\" property', () => pm.expect(responseJSON).own.property('article'));",
@@ -1274,7 +1274,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var is200Response = responseCode.code === 200;",
+                  "var is200Response = pm.response.code === 200;",
                   "",
                   "pm.test('Response code is 200 OK', () => pm.expect(is200Response).true);",
                   "",
@@ -1346,7 +1346,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var is200Response = responseCode.code === 200;",
+                  "var is200Response = pm.response.code === 200;",
                   "",
                   "pm.test('Response code is 200 OK', () => pm.expect(is200Response).true);",
                   "",
@@ -1537,7 +1537,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var is200Response = responseCode.code === 200",
+                  "var is200Response = pm.response.code === 200",
                   "",
                   "pm.test('Response code is 200 OK', () => pm.expect(is200Response).true);",
                   "",
@@ -1599,7 +1599,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var is200Response = responseCode.code === 200",
+                  "var is200Response = pm.response.code === 200",
                   "",
                   "pm.test('Response code is 200 OK', () => pm.expect(is200Response).true);",
                   "",
@@ -1740,7 +1740,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "if (!(environment.isIntegrationTest)) {",
+                  "if (!(pm.environment.isIntegrationTest)) {",
                   "    var responseJSON = JSON.parse(responseBody);",
                   "",
                   "    pm.test('Response contains \"user\" property', () => pm.expect(responseJSON).own.property('user'));",
@@ -1790,8 +1790,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "if (!(environment.isIntegrationTest)) {",
-                  "var is200Response = responseCode.code === 200;",
+                  "if (!(pm.environment.isIntegrationTest)) {",
+                  "var is200Response = pm.response.code === 200;",
                   "",
                   "pm.test('Response code is 200 OK', () => pm.expect(is200Response).true);",
                   "",
@@ -1849,8 +1849,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "if (!(environment.isIntegrationTest)) {",
-                  "var is200Response = responseCode.code === 200;",
+                  "if (!(pm.environment.isIntegrationTest)) {",
+                  "var is200Response = pm.response.code === 200;",
                   "",
                   "pm.test('Response code is 200 OK', () => pm.expect(is200Response).true);",
                   "",
@@ -1909,8 +1909,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "if (!(environment.isIntegrationTest)) {",
-                  "var is200Response = responseCode.code === 200;",
+                  "if (!(pm.environment.isIntegrationTest)) {",
+                  "var is200Response = pm.response.code === 200;",
                   "",
                   "pm.test('Response code is 200 OK', () => pm.expect(is200Response).true);",
                   "",
@@ -1974,7 +1974,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var is200Response = responseCode.code === 200;",
+                  "var is200Response = pm.response.code === 200;",
                   "",
                   "pm.test('Response code is 200 OK', () => pm.expect(is200Response).true);",
                   "",
