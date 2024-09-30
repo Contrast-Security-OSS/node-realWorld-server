@@ -1,21 +1,40 @@
 from locust import HttpUser, task, between
 import data
+# for clearing the DB on start. readme needs to mention.
+import pymongo
+import time
 
 class APIUser(HttpUser):
     host = "http://127.0.0.1:4000"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.user_data = data.UserData()
+        self.user = self.user_data.get_user()
+        self.username = self.user["username"]
+        self.email = self.user["email"]
+        self.password = self.user["password"]
+
+        self.token = "no token"
+
+        # the tasks that this user should run.
         self.list_of_tasks = [
             {"n": 5, "action": self.read_articles},
             self.login,
             lambda : self.post_articles(10),
         ]
 
+    # the only task as far as locust knows
     @task
     def main(self):
         self.execute(self.list_of_tasks)
 
+    # execute a list of tasks in various formats
+    # a task can be:
+    # - a function
+    # - a dict of the form {n, action}
+    #   - action can be a callable or a list
     def execute(self, list_of_tasks):
         for task in list_of_tasks:
             if callable(task):
@@ -34,7 +53,7 @@ class APIUser(HttpUser):
                 raise Exception("tasks must be function or dict")
 
     def post_articles(self, n):
-        articles = data.get_articles(self.username, n)
+        articles = self.user_data.get_articles(n)
         for article in articles:
             response = self.client.post(
                 url = "/api/articles",
@@ -42,38 +61,6 @@ class APIUser(HttpUser):
                 json = {"article": article}
             )
             self.check(response)
-
-
-
-    #@task
-    def simple_post_and_read(self):
-        # status = self.login()
-        # if status == 200:
-        #     print("login succeeded")
-        # else:
-        #     print("login failed")
-
-        response = self.client.get("/api/articles")
-
-        response = self.client.get(
-            url = "/api/articles",
-            headers = self.make_get_headers(auth = True)
-        )
-        body = {
-            "article":{
-                "title":"How to train your cat",
-                "description":"Ever wonder how?",
-                "body":"Let your cat train you instead; it is much easier.",
-                "tagList":["training", "cats"]
-                }
-            }
-        print(self.make_post_headers(auth = True))
-        response = self.client.post(
-            url = "/api/articles",
-            headers = self.make_post_headers(auth = True),
-            json = body
-        )
-        #print(response.json())
 
     def read_articles(self):
         self.client.get("/api/articles")
@@ -93,19 +80,9 @@ class APIUser(HttpUser):
             headers['authorization'] = f'Token {self.token}'
         return headers
 
-    # @task(3)
-    # def view_items(self):
-    #     for item_id in range(10):
-    #         self.client.get(f"/item?id={item_id}", name="/item")
-    #         time.sleep(1)
-
     def login(self):
-        # need to fetch multiple from some source
-        email = "bruce@bruce.com"
-        password = "giggles75"
-        # not used for login, if present, it's "register"
-        #username = "bruce"
-        body = {"user": { "email": email, "password": password}}
+        # don't supply username - that indicates register
+        body = {"user": { "email": self.email, "password": self.password}}
         response = self.client.post(
             url = "/api/users/login",
             json = body,
@@ -115,57 +92,47 @@ class APIUser(HttpUser):
         if response.status_code == 200:
             decoded = response.json()
             self.token = decoded['user']['token']
+            if self.username != decoded['user']['username']:
+                print(f"mismatched usernames")
             self.username = decoded['user']['username']
 
         return response
 
     def register(self):
-        # need to fetch multiple from some source
-        email = "bruce-again@bruce.com"
-        password = "giggles75"
-        username = "bruce-again"
-        body = {"user": { "email": email, "password": password, "username": username}}
+        body = {"user": {"email": self.email, "password": self.password, "username": self.username}}
         response = self.client.post(
-            url = "/api/users/login",
+            url = "/api/users",
             json = body,
             headers = self.make_post_headers(),
-            name = "/api/users/login (login)",
+            name = "/api/users (register)",
         )
-        if response.status_code == 200:
-            decoded = response.json()
-            self.token = decoded['user']['token']
+        self.check(response)
+
+        decoded = response.json()
+        self.token = decoded['user']['token']
+
+        print("got token in register")
+
 
     def check(self, response):
-        if response.status_code != 200:
-            print(f"Error: {response.status_code}")
+        if response.status_code >= 400:
+            raise Exception(f"Error: {response.status_code}")
 
     def on_start(self):
-        pass
-        # APIUser.list_of_tasks.append({"n": 5, "action": self.read_articles})
-        # APIUser.list_of_tasks.append(self.simple_post_and_read)
+        mongo_server = "mongodb://127.0.0.1:27017/somedb"
 
-    # def on_start(self):
-    #     EMAIL = "bruce@bruce.com"
-    #     PASSWORD = "giggles75"
-    #     USERNAME = "bruce-x"
-    #     # "{\"user\":{\"email\":\"{{EMAIL}}\", \"password\":\"{{PASSWORD}}\", \"username\":\"{{USERNAME}}\"}}"
-    #     json = {"user": { "email": EMAIL, "password": PASSWORD, "username": USERNAME }}
-    #     response = self.client.post(
-    #         url="/api/users/login",
-    #         json=json,
-    #         headers={"content-type": "application/json", "x-requested-with": 'XMLHttpRequest'},
-    #         #name="login" # no name defaults to url
-    #         )
-    #     response = response.json()
-    #     self.token = response['user']['token']
-    #     print(response)
+        # use host or env var host (just host for now until determine
+        # locust's priorities)
+        #
+        # clear the existing db so tasks won't fail.
+        dbname = mongo_server.split("/")[-1]
+        client = pymongo.MongoClient(mongo_server)
+        db = client[dbname]
 
-    # notes:
-    # on start:
-    #   register users? or clear DB?
-    #   how to clear DB if not. or force restart after deleting DB?
-    #   or start DB with known users?
-    # each task:
-    #   login
-    #   post articles (n, vary sizes, etc)
-    #
+        for collection_name in db.list_collection_names():
+            db[collection_name].drop()
+
+        time.sleep(1)
+
+        print(f"on start {self.user}")
+        self.register()

@@ -1,36 +1,37 @@
-
-_user_seq = 0
-
-def _useq():
-    global _user_seq
-    _user_seq += 1
-    return f"{_user_seq:03d}"
-
 import data.articles as articles
 
-def get_user():
-    seq = _useq()
-    return {
-        "email": make_email(seq),
-        "password": "password",
-        "username": make_username(seq),
-    }
+class UserData:
+    _user_seq = 0
 
-def make_email(seq):
-    return f"john.q.customer-{seq}@abysmal.com"
+    def __init__(self):
+        self._article_seq = 0
 
-def make_username(seq):
-    return f"john.q.customer-{seq}"
+        UserData._user_seq += 1
+        self._user_seq = f"{UserData._user_seq:02d}"
 
-_article_seq = 0
+        self.username = self.make_username()
+        self.email = self.make_email()
+        self.password = "password-might-be-long-enough"
 
-def _aseq():
-    global _article_seq
-    _article_seq += 1
-    return f"{_article_seq:03d}"
+    def get_user(self):
+        return {
+            "email": self.email,
+            "password": "password-might-be-long-enough",
+            "username": self.username,
+        }
 
-def get_articles(user, n = 1, paragraphs = 1):
-    # this assures that each article has a unique title (slug). the bodies
-    # don't need to be unique.
-    combined_seq = f"{user}-{_aseq()}"
-    return articles.get_articles(n, combined_seq, paragraphs)
+    def make_email(self):
+        return f"{self.make_username()}@abysmal.com"
+
+    def make_username(self, name = "john.q.customer"):
+        return f"{name}-{self._user_seq}"
+
+    def get_articles(self, n = 1, paragraphs = 1):
+        unique_articles = articles.get_articles(n, paragraphs)
+        # make the title unique by combining user and user-specific sequence
+        for article in unique_articles:
+            self._article_seq += 1
+            title = article["title"]
+            article["title"] = f"{title} by {self.username} ({self._article_seq})"
+
+        return unique_articles

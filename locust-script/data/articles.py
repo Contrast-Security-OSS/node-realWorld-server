@@ -1,9 +1,7 @@
-from data import _useq
-
 # https://www.lipsum.com/
 
 # known as slug to the application...
-titles = [
+_titles = [
     "Nullam at mauris maximus libero",
     "Proin accumsan semper odio et",
     "In ullamcorper facilisis ante, id",
@@ -11,7 +9,7 @@ titles = [
     "Interdum et malesuada fames ac",
 ]
 
-descriptions = [
+_descriptions = [
     "Mauris nec suscipit",
     "Neque fusce hendrerit",
     "Ligula vitae vestibulum",
@@ -19,7 +17,7 @@ descriptions = [
     "Rutrum urna eu"
 ]
 
-tags = [
+_tags = [
     "integer",
     "mattis",
     "orci",
@@ -52,7 +50,8 @@ Nam vitae enim purus. Donec vulputate laoreet porta. Ut gravida, erat at tempor 
 Aenean quam ex, tristique ut vehicula et, tempus vitae eros. Ut tempor sem purus, ut ultrices leo volutpat nec. Suspendisse dapibus tincidunt sollicitudin. Sed convallis, nisl ut mattis tincidunt, velit justo condimentum lectus, et tristique dolor purus in mi. Duis vitae dui a elit tempus rhoncus. Cras posuere, ligula et facilisis pellentesque, arcu felis tristique elit, et condimentum turpis magna vel tellus. Vivamus eget varius velit. Maecenas lacinia felis sit amet leo pellentesque, at dignissim dolor dictum. Etiam nibh augue, pretium id consectetur in, maximus finibus eros. Duis aliquet ante eget risus dictum hendrerit.
 """
 
-articles = [
+# words taken from generator output
+_articles = [
     {"text": lorem01, "paragraphs": 1, "words": 125},
     {"text": lorem02, "paragraphs": 2, "words": 217},
     {"text": lorem03, "paragraphs": 3, "words": 180},
@@ -60,22 +59,33 @@ articles = [
     {"text": lorem05, "paragraphs": 5, "words": 519},
 ]
 
-def get_articles(n, user, paragraphs = 1):
-    if paragraphs < 1 or paragraphs > len(articles):
-        raise Exception(f"paragraphs must be in the range 1 to {len(articles)}, got {paragraphs}")
+#
+# make sure all components of an article have the same number of items
+#
+count = len(_articles)
 
-    unique_articles = []
+if count != len(_titles) or count != len(_descriptions) or count != len(_tags):
+    raise Exception("mismatched lengths")
+
+#
+# return n articles, each with the specified number of paragraphs.
+#
+def get_articles(n = 1, paragraphs = 1):
+    # there is one element of _articles for each number of paragraphs
+    if paragraphs < 1 or paragraphs > count:
+        raise Exception(f"paragraphs must be in the range 1 to {count}, got {paragraphs}")
+
+    articles = []
 
     for i in range(n):
-        seq = f"{i:03d}"
-        ix = i % len(articles)
-        # title must be unique, so we add "by {user} ({seq})" to it.
+        # n can be anything but there is a finite number of items, so repeat after
+        ix = i % count
         article = {
-            "title": f"{titles[ix]} by {user} ({seq})",
-            "description": descriptions[ix],
-            "body": articles[paragraphs - 1]["text"],
-            "tagList": [tags[ix], tags[(ix + 1) % len(articles)]]
+            "title": _titles[ix],
+            "description": _descriptions[ix],
+            "body": _articles[paragraphs - 1]["text"],
+            "tagList": [_tags[ix], _tags[(ix + 1) % count]]
         }
-        unique_articles.append(article)
+        articles.append(article)
 
-    return unique_articles
+    return articles
