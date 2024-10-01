@@ -1,22 +1,6 @@
 
 import fs from 'fs';
 
-//
-// the only command line option is to supply the filename.
-//
-// definitions:
-// - wrapper - the code that the agent wraps a patched function with
-// - original - the code that the agent is wrapping, e.g., String.prototype.concat
-// - delta - the total difference, for all invocations, between the time taken
-// to execute the wrapper and the time taken to execute the original
-// - deltaPer - delta divided by number of invocations
-// - ratio - the ratio of the wrapper time to the original time.
-//
-// set env var SORT to `delta`, `ratio`, or `deltaPer` to sort the output
-// set env var VERBOSE to 1 to see skipped items
-//
-const verbose = process.env.VERBOSE === '1';
-
 const filename = process.argv[2] || 'agent-perf.jsonl';
 
 let json = fs.readFileSync(filename, 'utf-8');
@@ -29,12 +13,12 @@ for (let i = 0; i < json.length; i++) {
   let { timestamp, requests, prefix, measurements } = json[i];
 
   if (prefix !== 'patcher') {
-    verbose && console.log(`skipping ${timestamp} not patcher`);
+    console.log(`skipping ${timestamp} not patcher`);
     continue;
   }
 
   if (requests === lastRequests) {
-    verbose && console.log(`skipping ${timestamp} no new requests`);
+    console.log(`skipping ${timestamp} no new requests`);
     continue;
   }
   lastRequests = requests;

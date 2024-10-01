@@ -20,6 +20,22 @@ For more information on how to this works with other frontends/backends, head ov
    - `DATABASE_URI` - the uri to the mongo database: mongodb://127.0.0.1:27017/somedbname (assuming mongo is running on localhost:27017)
    - `ACCESS_TOKEN_SECRET` - the secret used for the JWT
 1. execute `node api/index.js`
+   - e.g., `ACCESS_TOKEN_SECRET=xyzzy-plover-boom DATABASE_URI=mongodb://127.0.0.1:27017/somedb node api/index.js`
+
+## Contrast-specific
+
+1. A contrast_security.yaml config file should be present and configured appropriately.
+1. The contrast agent should be installed as a dependency.
+    1. For developmental testing, linking to the local node-mono repo is useful.
+1. To enable perf use a command line like: `CSI_PERF_INTERVAL=10000 CSI_PERF=1 ACCESS_TOKEN_SECRET=xyzzy-plover-boom DATABASE_URI=mongodb://127.0.0.1:27017/somedb node --import @contrast/agent api/index.js`
+    1. loads the agent with perf enabled, using a 10 second interval for writing the log.
+1. set up `locust` per instructions in the `script-locust/README.md`
+1. run the request-generating script, `script-locust/locustfile.py` using `locust -f locust-script/locustfile.py --headless -i 1`
+    1. `-f` specifies the file (more TBD, exercising different aspects of the code)
+    1. `--headless` just means don't use the web UI, i.e., pure command line
+    1. `-i 1` specifies 1 iteration.
+1. the agent writes `agent-perf.jsonl`
+    1. `agent-perf.jsonl` can be analyzed using tools in `script-analysis/`.
 
 # How it works
 
