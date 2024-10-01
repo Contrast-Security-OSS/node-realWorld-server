@@ -20,9 +20,9 @@ class APIUser(HttpUser):
 
         # the tasks that this user should run.
         self.list_of_tasks = [
-            {"n": 5, "action": self.read_articles},
             self.login,
             lambda : self.post_articles(10),
+            {"n": 5, "action": self.read_articles},
         ]
 
     # the only task as far as locust knows
