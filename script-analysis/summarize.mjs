@@ -4,6 +4,8 @@ import fs from 'fs';
 //
 // the only command line option is to supply the filename.
 //
+// this is a work in progress.
+//
 // definitions:
 // - wrapper - the code that the agent wraps a patched function with
 // - original - the code that the agent is wrapping, e.g., String.prototype.concat
@@ -13,7 +15,7 @@ import fs from 'fs';
 // - ratio - the ratio of the wrapper time to the original time.
 //
 // set env var SORT to `delta`, `ratio`, or `deltaPer` to sort the output
-// set env var VERBOSE to 1 to see skipped items
+// set env var VERBOSE to 1 to see skipped items.
 //
 const verbose = process.env.VERBOSE === '1';
 
