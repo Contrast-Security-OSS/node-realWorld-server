@@ -89,13 +89,22 @@ for (let i = 0; i < json.length; i++) {
     } else if (process.env.SORT === 'deltaPer') {
       summarized.sort(sortDeltaPer);
     }
-    //summarized.sort((a, b) => compare(a.ratio, b.ratio));
+
+    let deltaPerReq = 0;
+
     console.log(`\n${timestamp}`);
     for (const { tag, n, nativeMicros, nativeMean, wrapperMicros, wrapperMean, ratio, delta } of summarized) {
       console.log(`${tag} ${n} ratio ${f2(ratio)} delta ${f2(delta)} deltaPer ${f2(delta / n)}`);
 
+      // total number of invocations / requests => invocations/request
+      // invocations/request * deltaPer => deltaPerReq
+      const deltaPer = delta / n;
+      deltaPerReq += (n / requests) * deltaPer;
       // console.log(`${tag} ${n} ${f2(nativeMicros)} ${f2(nativeMean)} ${f2(wrapperMicros)} ${f2(wrapperMean)} ${f2(ratio)} ${f2(delta)}`);
     }
+
+    console.log(`deltaPerReq ${f2(deltaPerReq)}`);
+
     break;
   }
 
