@@ -17,6 +17,7 @@ class APIUser(HttpUser):
         self.password = self.user["password"]
 
         self.token = "no token"
+        self.logged_in = False
 
         # the tasks that this user should run.
         self.list_of_tasks = [
@@ -81,6 +82,9 @@ class APIUser(HttpUser):
         return headers
 
     def login(self):
+        if self.logged_in:
+            return
+
         # don't supply username - that indicates register
         body = {"user": { "email": self.email, "password": self.password}}
         response = self.client.post(
@@ -95,6 +99,7 @@ class APIUser(HttpUser):
             if self.username != decoded['user']['username']:
                 print(f"mismatched usernames")
             self.username = decoded['user']['username']
+            self.logged_in = True
 
         return response
 
@@ -110,9 +115,6 @@ class APIUser(HttpUser):
 
         decoded = response.json()
         self.token = decoded['user']['token']
-
-        print("got token in register")
-
 
     def check(self, response):
         if response.status_code >= 400:
