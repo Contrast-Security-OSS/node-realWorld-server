@@ -94,7 +94,8 @@ for (let i = 0; i < json.length; i++) {
 
     console.log(`\n${timestamp}`);
     for (const { tag, n, nativeMicros, nativeMean, wrapperMicros, wrapperMean, ratio, delta } of summarized) {
-      console.log(`${tag} ${n} ratio ${f2(ratio)} delta ${f2(delta)} deltaPer ${f2(delta / n)}`);
+      const raw = `(raw w ${wrapperMean}, o ${nativeMean})`;
+      console.log(`${tag} ${n} ratio ${f2(ratio)} delta ${f2(delta)} deltaPer ${f2(delta / n)} ${raw}`);
 
       // total number of invocations / requests => invocations/request
       // invocations/request * deltaPer => deltaPerReq
