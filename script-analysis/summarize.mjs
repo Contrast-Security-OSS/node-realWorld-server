@@ -54,6 +54,10 @@ for (let i = 0; i < json.length; i++) {
   const wrapperLen = wrapper.length;
   const post = ':post';
   const postLen = post.length;
+  const put = ':put';
+  const putLen = post.length;
+  const get = ':get';
+  const getLen = post.length;
 
   const summarized = [];
   const unified = {};
@@ -90,10 +94,25 @@ for (let i = 0; i < json.length; i++) {
       const unifiedTag = tag.slice(prefixLen, -postLen);
 
       unified[unifiedTag] = { n, wrapperMicros: totalMicros, wrapperMean: mean };
-      unified[unifiedTag].tag = unifiedTag;
+      unified[unifiedTag].tag = unifiedTag + ' post';
+
+      summarized.push(unified[unifiedTag]);
+    } else if (tag.endsWith(put)) {
+      const unifiedTag = tag.slice(prefixLen, -putLen);
+
+      unified[unifiedTag] = { n, wrapperMicros: totalMicros, wrapperMean: mean };
+      unified[unifiedTag].tag = unifiedTag + ' put';
+
+      summarized.push(unified[unifiedTag]);
+    } else if (tag.endsWith(get)) {
+      const unifiedTag = tag.slice(prefixLen, -getLen);
+
+      unified[unifiedTag] = { n, wrapperMicros: totalMicros, wrapperMean: mean };
+      unified[unifiedTag].tag = unifiedTag + ' get';
 
       summarized.push(unified[unifiedTag]);
     }
+
   }
 
   if (summarized.length) {
