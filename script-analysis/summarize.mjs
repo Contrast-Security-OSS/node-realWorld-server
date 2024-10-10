@@ -30,7 +30,13 @@ let lastRequests = 0;
 for (let i = 0; i < json.length; i++) {
   let { timestamp, requests, prefix, measurements } = json[i];
 
-  if (prefix !== 'patcher') {
+  if (process.env.STATS === 'reporter' || process.env.STATS === 'contrast-ui-reporter') {
+    if (prefix !== 'contrast-ui-reporter') {
+      verbose && console.log(`skipping ${timestamp} not reporter`);
+      continue;
+    }
+  }
+  else if (prefix !== 'patcher') {
     verbose && console.log(`skipping ${timestamp} not patcher`);
     continue;
   }
@@ -46,6 +52,12 @@ for (let i = 0; i < json.length; i++) {
   const runOrigLen = runOrig.length;
   const wrapper = ':wrapper';
   const wrapperLen = wrapper.length;
+  const post = ':post';
+  const postLen = post.length;
+  const put = ':put';
+  const putLen = post.length;
+  const get = ':get';
+  const getLen = post.length;
 
   const summarized = [];
   const unified = {};
@@ -78,7 +90,29 @@ for (let i = 0; i < json.length; i++) {
         // this should never happen either.
         unified[unifiedTag] = { n, wrapperMicros: totalMicros, wrapperMean: mean };
       }
+    } else if (tag.endsWith(post)) {
+      const unifiedTag = tag.slice(prefixLen, -postLen);
+
+      unified[unifiedTag] = { n, wrapperMicros: totalMicros, wrapperMean: mean };
+      unified[unifiedTag].tag = unifiedTag + ' post';
+
+      summarized.push(unified[unifiedTag]);
+    } else if (tag.endsWith(put)) {
+      const unifiedTag = tag.slice(prefixLen, -putLen);
+
+      unified[unifiedTag] = { n, wrapperMicros: totalMicros, wrapperMean: mean };
+      unified[unifiedTag].tag = unifiedTag + ' put';
+
+      summarized.push(unified[unifiedTag]);
+    } else if (tag.endsWith(get)) {
+      const unifiedTag = tag.slice(prefixLen, -getLen);
+
+      unified[unifiedTag] = { n, wrapperMicros: totalMicros, wrapperMean: mean };
+      unified[unifiedTag].tag = unifiedTag + ' get';
+
+      summarized.push(unified[unifiedTag]);
     }
+
   }
 
   if (summarized.length) {
@@ -95,8 +129,12 @@ for (let i = 0; i < json.length; i++) {
     console.log(`\n${timestamp}`);
     for (const { tag, n, nativeMicros, nativeMean, wrapperMicros, wrapperMean, ratio, delta } of summarized) {
       const raw = `(raw w ${wrapperMean}, o ${nativeMean})`;
-      console.log(`${tag} ${n} ratio ${f2(ratio)} delta ${f2(delta)} deltaPer ${f2(delta / n)} ${raw}`);
-
+      if (ratio) {
+        console.log(`${tag} ${n} ratio ${f2(ratio)} delta ${f2(delta)} deltaPer ${f2(delta / n)} ${raw}`);
+      } else {
+        const raw = `(raw w ${wrapperMean}, total ${wrapperMicros})`;
+        console.log(`${tag} ${n} ${raw}`);
+      }
       // total number of invocations / requests => invocations/request
       // invocations/request * deltaPer => deltaPerReq
       const deltaPer = delta / n;
@@ -104,7 +142,7 @@ for (let i = 0; i < json.length; i++) {
       // console.log(`${tag} ${n} ${f2(nativeMicros)} ${f2(nativeMean)} ${f2(wrapperMicros)} ${f2(wrapperMean)} ${f2(ratio)} ${f2(delta)}`);
     }
 
-    console.log(`deltaPerReq ${f2(deltaPerReq)}`);
+    if (deltaPerReq) console.log(`deltaPerReq ${f2(deltaPerReq)}`);
 
     break;
   }
