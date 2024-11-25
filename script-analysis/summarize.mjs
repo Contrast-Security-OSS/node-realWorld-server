@@ -17,6 +17,22 @@ import fs from 'fs';
 // set env var SORT to `delta`, `ratio`, or `deltaPer` to sort the output
 // set env var VERBOSE to 1 to see skipped items.
 //
+const prefixHandlers = {
+  'contrast-ui-reporter': reporter,
+  'patcher': patcher,
+};
+
+const kRunOrig = ':native:runOriginalFunction';
+const kRunOrigLen = kRunOrig.length;
+const kWrapper = ':wrapper';
+const kWrapperLen = kWrapper.length;
+const kPost = ':post';
+const kPostLen = kPost.length;
+const kPut = ':put';
+const kPutLen = kPut.length;
+const kGet = ':get';
+const kGetLen = kGet.length;
+
 const verbose = process.env.VERBOSE === '1';
 
 const filename = process.argv[2] || 'agent-perf.jsonl';
@@ -30,16 +46,11 @@ let lastRequests = 0;
 for (let i = 0; i < json.length; i++) {
   let { timestamp, requests, prefix, measurements } = json[i];
 
-  if (process.env.STATS === 'reporter' || process.env.STATS === 'contrast-ui-reporter') {
-    if (prefix !== 'contrast-ui-reporter') {
-      verbose && console.log(`skipping ${timestamp} not reporter`);
-      continue;
-    }
-  }
-  else if (prefix !== 'patcher') {
-    verbose && console.log(`skipping ${timestamp} not patcher`);
+  if (!(prefix in prefixHandlers)) {
+    verbose && console.log(`skipping ${timestamp} unknown prefix ${prefix}`);
     continue;
   }
+const prefixLen = prefix.length + 1;
 
   if (requests === lastRequests) {
     verbose && console.log(`skipping ${timestamp} no new requests`);
@@ -47,24 +58,13 @@ for (let i = 0; i < json.length; i++) {
   }
   lastRequests = requests;
 
-  const prefixLen = prefix.length + 1;
-  const runOrig = ':native:runOriginalFunction';
-  const runOrigLen = runOrig.length;
-  const wrapper = ':wrapper';
-  const wrapperLen = wrapper.length;
-  const post = ':post';
-  const postLen = post.length;
-  const put = ':put';
-  const putLen = post.length;
-  const get = ':get';
-  const getLen = post.length;
 
   const summarized = [];
   const unified = {};
   for (const measurement of measurements) {
     const { tag, n, totalMicros, mean } = measurement;
-    if (tag.endsWith(runOrig)) {
-      const unifiedTag = tag.slice(prefixLen, -runOrigLen);
+    if (tag.endsWith(kRunOrig)) {
+      const unifiedTag = tag.slice(prefixLen, -kRunOrigLen);
       if (unifiedTag in unified) {
         throw new Error(`wrapper came first1 ${timestamp} ${unifiedTag}`);
         // merge, but this should never happen because the native
@@ -72,8 +72,8 @@ for (let i = 0; i < json.length; i++) {
       } else {
         unified[unifiedTag] = { tag: unifiedTag, n, nativeMicros: totalMicros, nativeMean: mean };
       }
-    } else if (tag.endsWith(wrapper)) {
-      const unifiedTag = tag.slice(prefixLen, -wrapperLen);
+    } else if (tag.endsWith(kWrapper)) {
+      const unifiedTag = tag.slice(prefixLen, -kWrapperLen);
       if (unifiedTag in unified) {
         unified[unifiedTag].wrapperMicros = totalMicros;
         unified[unifiedTag].wrapperMean = mean;
@@ -90,22 +90,22 @@ for (let i = 0; i < json.length; i++) {
         // this should never happen either.
         unified[unifiedTag] = { n, wrapperMicros: totalMicros, wrapperMean: mean };
       }
-    } else if (tag.endsWith(post)) {
-      const unifiedTag = tag.slice(prefixLen, -postLen);
+    } else if (tag.endsWith(kPost)) {
+      const unifiedTag = tag.slice(prefixLen, -kPostLen);
 
       unified[unifiedTag] = { n, wrapperMicros: totalMicros, wrapperMean: mean };
       unified[unifiedTag].tag = unifiedTag + ' post';
 
       summarized.push(unified[unifiedTag]);
-    } else if (tag.endsWith(put)) {
-      const unifiedTag = tag.slice(prefixLen, -putLen);
+    } else if (tag.endsWith(kPut)) {
+      const unifiedTag = tag.slice(prefixLen, -kPutLen);
 
       unified[unifiedTag] = { n, wrapperMicros: totalMicros, wrapperMean: mean };
       unified[unifiedTag].tag = unifiedTag + ' put';
 
       summarized.push(unified[unifiedTag]);
-    } else if (tag.endsWith(get)) {
-      const unifiedTag = tag.slice(prefixLen, -getLen);
+    } else if (tag.endsWith(kGet)) {
+      const unifiedTag = tag.slice(prefixLen, -kGetLen);
 
       unified[unifiedTag] = { n, wrapperMicros: totalMicros, wrapperMean: mean };
       unified[unifiedTag].tag = unifiedTag + ' get';

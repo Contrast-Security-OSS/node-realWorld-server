@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/credential-providers": "3.654",
-    "@contrast/agent": "file:../../csi/node-mono/agent",
+    "@contrast/agent": "^5.21.0",
     "bcrypt": "^5.1.0",
     "braces": "^3.0.3",
     "cookie-parser": "^1.4.6",

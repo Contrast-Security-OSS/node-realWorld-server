@@ -36,6 +36,7 @@ For more information on how to this works with other frontends/backends, head ov
     1. `-i 1` specifies 1 iteration.
 1. the agent writes `agent-perf.jsonl`
     1. `agent-perf.jsonl` can be analyzed using tools in `script-analysis/`.
+    1. `summarize.mjs` will summarize the data. it's primitive, but provides basic data.
 
 # How it works
 
