@@ -20,7 +20,7 @@ For more information on how to this works with other frontends/backends, head ov
    - `DATABASE_URI` - the uri to the mongo database: mongodb://127.0.0.1:27017/somedbname (assuming mongo is running on localhost:27017)
    - `ACCESS_TOKEN_SECRET` - the secret used for the JWT
 1. execute `node api/index.js`
-   - e.g., `ACCESS_TOKEN_SECRET=xyzzy-plover-boom DATABASE_URI=mongodb://127.0.0.1:27017/somedb node api/index.js`
+   - e.g., `ACCESS_TOKEN_SECRET=xyzzy-plover-boom DATABASE_URI=mongodb://127.0.0.1:27017/test node api/index.js`
 
 ## Contrast-specific
 
