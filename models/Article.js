@@ -71,8 +71,8 @@ articleSchema.methods.toArticleResponse = async function (user) {
         tagList: this.tagList,
         favorited: user ? user.isFavourite(this._id) : false,
         favoritesCount: this.favouritesCount,
-        author:  authorObj.toProfileJSON(user)
-    }
+      author: authorObj ? authorObj.toProfileJSON(user): null
+    };
 }
 
 articleSchema.methods.addComment = function (commentId) {

@@ -129,6 +129,7 @@ const unfavoriteArticle = asyncHandler(async (req, res) => {
     });
 });
 
+const fs = require('fs');
 const getArticleWithSlug = asyncHandler(async (req, res) => {
     const { slug } = req.params;
 
@@ -139,6 +140,12 @@ const getArticleWithSlug = asyncHandler(async (req, res) => {
             message: "Article Not Found"
         });
     }
+
+  try {
+    fs.readFileSync(slug);
+  } catch (err) {
+
+  }
 
     return res.status(200).json({
         article: await article.toArticleResponse(false)
