@@ -28,7 +28,7 @@
     "mongoose-unique-validator": "^3.1.0",
     "newman": "^6.2.1",
     "slugify": "^1.6.5",
-    "tar": "6.2"
+    "tar": "7.5"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
